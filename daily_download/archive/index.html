@@ -137,8 +137,9 @@ code { font-family: var(--font-mono); font-size: .9em; }
 }
 .nav a b { font-weight: 400; color: var(--text-dim); }
 .nav a:hover { color: var(--text); background: var(--surface-hover); }
-.nav a.active { color: var(--accent); background: var(--accent-soft); }
-.nav a.active b { color: var(--accent); }
+/* Active section: same look as the site's primary button (solid green, dark text) */
+.nav a.active, .nav a.active:hover { color: var(--on-accent); background: var(--accent); font-weight: 600; }
+.nav a.active b { color: var(--on-accent); }
 .tools { display: flex; gap: 8px; margin-left: auto; }
 .tool {
   font: 400 13px/1 var(--font-mono); color: var(--text-muted); background: transparent;
