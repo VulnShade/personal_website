@@ -1,5 +1,11 @@
 [
   {
+    "date": "2026-11-11",
+    "title": "An attacker used two compromised Qubole IAM users to assume roles that customers had granted Qubole, then emptied Secrets Manager, SSM and S3 across dozens of AWS accounts. Third-party cross-account trust is the attack path, not AWS itself.",
+    "findings": 5,
+    "brief": 4
+  },
+  {
     "date": "2026-11-10",
     "title": "Claude Fable 5.2 takes #1 on independent leaderboards (Artificial Analysis Intelligence Index 65 vs Gemini 4 Carbon 60), but cost per task rose ~31% on SemiAnalysis's GDPx despite cheaper tokens \u2014 effort level now matters as much as model choice.",
     "findings": 12,
