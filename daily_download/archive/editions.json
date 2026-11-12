@@ -1,5 +1,11 @@
 [
   {
+    "date": "2026-11-12",
+    "title": "A breach at inference provider Fireworks AI exposed Notion AI chat transcripts, a reminder that your AI subprocessors hold your users' prompts and need the same scrutiny as any data processor.",
+    "findings": 7,
+    "brief": 2
+  },
+  {
     "date": "2026-11-11",
     "title": "An attacker used two compromised Qubole IAM users to assume roles that customers had granted Qubole, then emptied Secrets Manager, SSM and S3 across dozens of AWS accounts. Third-party cross-account trust is the attack path, not AWS itself.",
     "findings": 5,
