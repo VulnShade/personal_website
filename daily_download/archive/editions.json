@@ -1,5 +1,11 @@
 [
   {
+    "date": "2026-11-13",
+    "title": "SCKit, a worm-like toolkit found in the ScreenConnect MSP attacks, is built to jump from a customer endpoint to the technician who connects to it and on to other managed networks; 288 endpoints across 48 organizations were hit within 90 minutes.",
+    "findings": 7,
+    "brief": 3
+  },
+  {
     "date": "2026-11-12",
     "title": "A breach at inference provider Fireworks AI exposed Notion AI chat transcripts, a reminder that your AI subprocessors hold your users' prompts and need the same scrutiny as any data processor.",
     "findings": 7,
