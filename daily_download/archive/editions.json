@@ -1,5 +1,11 @@
 [
   {
+    "date": "2026-11-14",
+    "title": "Amazon's honeypots, posing as LLM APIs, captured ARTEX attack agents' own memory and showed criminals harvesting AI model keys from exposed LLM gateways and AI builders at industrial scale, then using the stolen keys to power more hunting.",
+    "findings": 2,
+    "brief": 1
+  },
+  {
     "date": "2026-11-13",
     "title": "SCKit, a worm-like toolkit found in the ScreenConnect MSP attacks, is built to jump from a customer endpoint to the technician who connects to it and on to other managed networks; 288 endpoints across 48 organizations were hit within 90 minutes.",
     "findings": 7,
