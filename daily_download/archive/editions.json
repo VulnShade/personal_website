@@ -1,5 +1,11 @@
 [
   {
+    "date": "2026-11-16",
+    "title": "Google's threat intelligence team says attackers have, for the first time, used LLM frameworks to fully automate vulnerability discovery and exploitation with no human in the loop, and expects fully agentic intrusions to follow.",
+    "findings": 4,
+    "brief": 3
+  },
+  {
     "date": "2026-11-14",
     "title": "Amazon's honeypots, posing as LLM APIs, captured ARTEX attack agents' own memory and showed criminals harvesting AI model keys from exposed LLM gateways and AI builders at industrial scale, then using the stolen keys to power more hunting.",
     "findings": 2,
