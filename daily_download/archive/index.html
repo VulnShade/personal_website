@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'sha256-er/R8fLKw+guc+b2OwRnasdYmYFAkmPl0AyGx0vpHWQ=' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'sha256-0RkCFBpBY1RzommdmKgF4uUsyYqZt9mP1wZc7C29pE0='; img-src data:; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="theme-color" content="#0A0D12">
 <title>The Daily Download · Archive</title>
@@ -12,8 +12,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap">
-<style>
-/* The Daily Download: styled to match the personal site (dark, one green accent, faint grid, mono labels). */
+<style>/* The Daily Download: styled to match the personal site (dark, one green accent, faint grid, mono labels). */
 :root {
   /* Surfaces */
   --bg: #0A0D12;
@@ -392,7 +391,6 @@ details.warnings ul { margin: 10px 0 0; padding-left: 18px; color: var(--text-fa
   body { background: #fff; color: #000; }
   details.more { display: block; }
 }
-
 </style>
 </head>
 <body>
@@ -401,8 +399,7 @@ details.warnings ul { margin: 10px 0 0; padding-left: 18px; color: var(--text-fa
 <header class="site-header"><nav class="container site-nav" aria-label="Primary"><a class="logo" href="../../" aria-label="Home"><span class="logo__prefix">~/</span>MJM<span class="cursor" aria-hidden="true"></span></a><ul class="site-nav__links"><li><a class="site-nav__link" href="../../#about">about</a></li><li><a class="site-nav__link" href="../../daily_download/" aria-current="page">daily download</a></li></ul></nav></header>
 <main id="main"><section class="container hero" id="top" aria-labelledby="dd-title"><p class="prompt"><span class="prompt__sym">$</span> ls ./daily_download/archive</p><h1 id="dd-title" class="hero__title">Archive</h1><p class="hero__date">Every edition of The Daily Download, newest first.</p><div class="hero__meta"><span class="hero__stats">6 editions</span><a class="text-link" href="../">cd ../latest →</a></div></section><div class="container wrap"><ul class="archive-list"><li><a class="archive-row" href="2026-11-16.html"><time class="archive-row__date" datetime="2026-11-16">2026-11-16</time><span class="archive-row__count">4 findings</span></a></li><li><a class="archive-row" href="2026-11-14.html"><time class="archive-row__date" datetime="2026-11-14">2026-11-14</time><span class="archive-row__count">2 findings</span></a></li><li><a class="archive-row" href="2026-11-13.html"><time class="archive-row__date" datetime="2026-11-13">2026-11-13</time><span class="archive-row__count">7 findings</span></a></li><li><a class="archive-row" href="2026-11-12.html"><time class="archive-row__date" datetime="2026-11-12">2026-11-12</time><span class="archive-row__count">7 findings</span></a></li><li><a class="archive-row" href="2026-11-11.html"><time class="archive-row__date" datetime="2026-11-11">2026-11-11</time><span class="archive-row__count">5 findings</span></a></li><li><a class="archive-row" href="2026-11-10.html"><time class="archive-row__date" datetime="2026-11-10">2026-11-10</time><span class="archive-row__count">12 findings</span></a></li></ul></div></main>
 <footer class="site-footer"><div class="container"><span>© 2026 Michael Martire</span><div class="footer-key"><span>pgp: 3663 1574 34A4 6C1E 93BA DFD8 79B2 B4F7 0256 5E3D</span><a class="footer-key__link" href="../../pgp.asc" download="michael-martire-pgp.asc">download public key ↓</a></div></div></footer>
-<script>
-(function () {
+<script>(function () {
   "use strict";
 
   var filterBtn = document.getElementById("filter-toggle");
@@ -459,7 +456,6 @@ details.warnings ul { margin: 10px 0 0; padding-left: 18px; color: var(--text-fa
     document.querySelectorAll("section.section").forEach(function (s) { observer.observe(s); });
   }
 })();
-
 </script>
 </body>
 </html>
