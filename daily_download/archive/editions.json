@@ -1,5 +1,11 @@
 [
   {
+    "date": "2026-11-18",
+    "title": "Two malicious versions of Microsoft's agent-framework PyPI package (1.26.1 and 1.26.2) stole cloud, CI and Azure managed-identity credentials on every Python start; if you installed either, rotate everything reachable from that environment.",
+    "findings": 8,
+    "brief": 4
+  },
+  {
     "date": "2026-11-16",
     "title": "Google's threat intelligence team says attackers have, for the first time, used LLM frameworks to fully automate vulnerability discovery and exploitation with no human in the loop, and expects fully agentic intrusions to follow.",
     "findings": 4,

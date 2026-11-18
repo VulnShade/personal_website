@@ -1,0 +1,613 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'sha256-er/R8fLKw+guc+b2OwRnasdYmYFAkmPl0AyGx0vpHWQ=' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'sha256-0RkCFBpBY1RzommdmKgF4uUsyYqZt9mP1wZc7C29pE0='; img-src data:; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#0A0D12">
+<title>The Daily Download · 2026-11-18</title>
+<meta name="description" content="Two malicious versions of Microsoft&#x27;s agent-framework PyPI package (1.26.1 and 1.26.2) stole cloud, CI and Azure managed-identity credentials on every Python start; if you installed either, rotate everything reachable from that environment.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22 role=%22img%22 aria-label=%22The Daily Download%22%3E%3Crect width=%2264%22 height=%2264%22 rx=%2212%22 fill=%22%230A0D12%22/%3E%3Ctext x=%228%22 y=%2242%22 font-family=%22JetBrains Mono, ui-monospace, monospace%22 font-size=%2226%22 font-weight=%22600%22 fill=%22%233DDC97%22%3E~/%3C/text%3E%3Crect x=%2244%22 y=%2220%22 width=%2210%22 height=%2226%22 fill=%22%233DDC97%22/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap">
+<style>/* The Daily Download: styled to match the personal site (dark, one green accent, faint grid, mono labels). */
+:root {
+  /* Surfaces */
+  --bg: #0A0D12;
+  --surface: #0E1319;
+  --surface-alt: #0C1016;
+  --surface-hover: #10151C;
+
+  /* Lines */
+  --line: #1A2129;
+  --line-card: #1F2731;
+  --line-strong: #2A3441;
+  --line-hover: #2E3A48;
+
+  /* Text */
+  --text-strong: #F2F6FA;
+  --text: #E6EDF3;
+  --text-code: #C9D3DE;
+  --text-muted: #A3B0BF;
+  --text-faint: #8391A1;
+  --text-dim: #6E7C8C;
+
+  /* Accent (one accent only) */
+  --accent: #3DDC97;
+  --accent-soft: rgba(61, 220, 151, 0.12);
+  --on-accent: #06110B;
+
+  /* Status colours: used only for priority and exploitation signals */
+  --critical: #FF6B6B;
+  --high: #F5B544;
+  --medium: #E3CF6E;
+
+  /* Type */
+  --font-display: "Space Grotesk", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  /* Layout */
+  --container: 1200px;
+  --gutter: clamp(16px, 4vw, 48px);
+  --radius-sm: 6px;
+  --radius: 10px;
+  --radius-lg: 12px;
+  --grid-line: rgba(148, 163, 184, 0.045);
+  color-scheme: dark;
+}
+
+/* ---------- Base ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 72px; }
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg);
+  background-image:
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size: 48px 48px;
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+main { flex: 1 0 auto; }
+a { color: var(--text); text-decoration: none; }
+a:hover { color: #FFFFFF; }
+a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+h1, h2, h3, h4, p { margin: 0; }
+code { font-family: var(--font-mono); font-size: .9em; }
+
+.container { max-width: var(--container); margin: 0 auto; padding-inline: var(--gutter); }
+
+.skip-link {
+  position: absolute; left: 16px; top: -48px;
+  padding: 10px 14px; background: var(--accent); color: var(--on-accent);
+  border-radius: var(--radius-sm); font-weight: 600; z-index: 30;
+}
+.skip-link:focus { top: 12px; }
+
+.cursor {
+  display: inline-block; width: 10px; height: 1.05em;
+  vertical-align: -0.15em; margin-left: 4px;
+  background: var(--accent);
+  animation: blink 1.1s steps(1) infinite;
+}
+@keyframes blink { 50% { opacity: 0; } }
+
+/* ---------- Site header (same as the rest of the site) ---------- */
+.site-header { border-bottom: 1px solid var(--line); background: rgba(10, 13, 18, 0.85); }
+.site-nav {
+  display: flex; flex-wrap: wrap; align-items: center;
+  justify-content: space-between; gap: 16px; padding-block: 20px;
+}
+.logo {
+  display: flex; align-items: center; gap: 8px; min-height: 44px;
+  font-family: var(--font-mono); font-size: 16px; font-weight: 600; letter-spacing: -0.01em;
+}
+.logo__prefix { color: var(--accent); }
+.site-nav__links {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 4px;
+  font-family: var(--font-mono); font-size: 14px; list-style: none; margin: 0; padding: 0;
+}
+.site-nav__link { display: inline-block; padding: 12px; color: var(--text-muted); }
+.site-nav__link:hover, .site-nav__link[aria-current="page"] { color: var(--text); }
+
+/* ---------- Section bar (sticky) ---------- */
+.subbar {
+  position: sticky; top: 0; z-index: 20;
+  background: rgba(10, 13, 18, 0.92);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line);
+}
+.subbar-inner { position: relative; display: flex; align-items: center; gap: 16px; padding-block: 8px; }
+.nav { display: flex; gap: 2px; overflow-x: auto; flex: 1; scrollbar-width: none; font-family: var(--font-mono); font-size: 13px; }
+.nav::-webkit-scrollbar { display: none; }
+.nav a {
+  display: inline-flex; align-items: center; gap: 8px; padding: 9px 10px; border-radius: var(--radius-sm);
+  color: var(--text-muted); white-space: nowrap;
+}
+.nav a b { font-weight: 400; color: var(--text-dim); }
+.nav a:hover { color: var(--text); background: var(--surface-hover); }
+/* Active section: same look as the site's primary button (solid green, dark text) */
+.nav a.active, .nav a.active:hover { color: var(--on-accent); background: var(--accent); font-weight: 600; }
+.nav a.active b { color: var(--on-accent); }
+.tools { display: flex; gap: 8px; margin-left: auto; }
+.tool {
+  font: 400 13px/1 var(--font-mono); color: var(--text-muted); background: transparent;
+  border: 1px solid var(--line-strong); border-radius: var(--radius-sm);
+  min-height: 38px; padding: 0 12px; cursor: pointer; white-space: nowrap;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.tool:hover { border-color: var(--line-hover); color: var(--text); }
+.tool[aria-pressed="true"] { background: var(--accent-soft); border-color: transparent; color: var(--accent); }
+.nav-toggle { display: none; }
+
+/* ---------- Shared text ---------- */
+.eyebrow { font-family: var(--font-mono); font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
+.prompt { font-family: var(--font-mono); font-size: 14px; color: var(--accent); }
+.prompt__sym { color: var(--text-dim); }
+.text-link { font-family: var(--font-mono); font-size: 14px; color: var(--text-muted); padding: 12px 0; display: inline-block; }
+.text-link:hover { color: var(--text); }
+
+/* ---------- Banners ---------- */
+.fixture-banner {
+  background: rgba(245, 181, 68, 0.12); border-bottom: 1px solid rgba(245, 181, 68, 0.35);
+  color: var(--high); font: 500 13px/1.5 var(--font-mono); text-align: center; padding: 10px 16px;
+}
+
+/* ---------- Hero ---------- */
+.hero { display: flex; flex-direction: column; gap: 18px; padding-block: clamp(48px, 7vw, 88px) clamp(32px, 4vw, 48px); }
+.hero__title {
+  font-family: var(--font-display); font-weight: 600;
+  font-size: clamp(40px, 5.6vw, 68px); line-height: 1.04; letter-spacing: -0.03em; color: var(--text-strong);
+}
+.hero__date { font-size: 18px; line-height: 1.65; color: var(--text-muted); }
+.hero__meta { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 24px; }
+.hero__stats { font-family: var(--font-mono); font-size: 13px; color: var(--text-faint); }
+
+.wrap { padding-bottom: 72px; display: flex; flex-direction: column; gap: 56px; }
+
+/* ---------- Panels: executive briefing, worth learning ---------- */
+.panel { border: 1px solid var(--line-card); border-radius: var(--radius-lg); background: var(--surface); padding: clamp(20px, 3vw, 32px); }
+.panel-head { display: flex; flex-direction: column; gap: 10px; margin-bottom: 18px; }
+.panel-title { font-family: var(--font-display); font-weight: 600; font-size: clamp(24px, 2.6vw, 30px); line-height: 1.15; letter-spacing: -0.02em; color: var(--text-strong); }
+
+.executive ol { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line-card); }
+.executive li { border-bottom: 1px solid var(--line-card); }
+.exec-item { display: grid; grid-template-columns: 36px 1fr auto; gap: 16px; align-items: baseline; padding: 18px 12px; color: var(--text); }
+a.exec-item:hover { background: var(--surface-hover); color: var(--text); }
+.exec-item .num { font: 400 13px/1.6 var(--font-mono); color: var(--text-dim); }
+.exec-text { font-size: 17px; line-height: 1.55; color: var(--text-strong); }
+.exec-critical .num { color: var(--critical); }
+
+.learning ul { margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: 20px; }
+.learning li { display: flex; flex-direction: column; gap: 6px; }
+.learning li b { font: 600 17px/1.35 var(--font-display); color: var(--text-strong); }
+.learning li p { font-size: 15px; line-height: 1.6; color: var(--text-muted); }
+.learning li a { font-family: var(--font-mono); font-size: 13px; color: var(--accent); white-space: nowrap; }
+
+/* ---------- Sections ---------- */
+.section { display: flex; flex-direction: column; gap: 24px; }
+.section-head { display: flex; flex-direction: column; gap: 12px; }
+.section-title {
+  display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap;
+  font-family: var(--font-display); font-weight: 600; font-size: clamp(28px, 3vw, 38px);
+  line-height: 1.12; letter-spacing: -0.02em; color: var(--text-strong);
+}
+.section-title small { font: 400 13px/1 var(--font-mono); color: var(--text-faint); letter-spacing: 0; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 480px), 1fr)); gap: 20px; }
+
+/* ---------- Cards ---------- */
+.card {
+  background: var(--surface); border: 1px solid var(--line-card); border-radius: var(--radius);
+  padding: 28px; display: flex; flex-direction: column; gap: 16px; min-width: 0;
+  transition: border-color 0.2s ease;
+}
+.card:hover { border-color: var(--line-hover); }
+.card:target { border-color: var(--accent); }
+.card.prio-critical { border-color: rgba(255, 107, 107, 0.45); }
+.card-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.card-head .meta { margin-left: auto; font-family: var(--font-mono); font-size: 12px; color: var(--text-faint); }
+.card h3 { font: 600 21px/1.3 var(--font-display); letter-spacing: -0.01em; color: var(--text-strong); }
+.summary { font-size: 15px; line-height: 1.65; color: var(--text-muted); }
+
+/* Pills: mono tags in the site style; colour only where it carries meaning */
+.pill, .conf { font: 400 12px/1 var(--font-mono); padding: 5px 10px; border-radius: 999px; border: 1px solid var(--line-strong); color: var(--text-muted); white-space: nowrap; }
+.pill-critical { color: var(--critical); border-color: rgba(255, 107, 107, 0.5); background: rgba(255, 107, 107, 0.1); }
+.pill-high { color: var(--high); border-color: rgba(245, 181, 68, 0.45); background: rgba(245, 181, 68, 0.08); }
+.pill-medium { color: var(--text-muted); }
+.pill-low { color: var(--text-faint); }
+.pill-update { color: var(--accent); border-color: transparent; background: var(--accent-soft); }
+.conf { border-color: transparent; padding-inline: 2px; color: var(--text-faint); }
+.conf-preliminary, .conf-conflicting { color: var(--medium); }
+
+.block { border-radius: var(--radius-sm); padding: 14px 16px; background: var(--surface-alt); border: 1px solid var(--line); }
+.block h4 { margin-bottom: 6px; font: 400 12px/1.3 var(--font-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+.block p { font-size: 15px; line-height: 1.6; color: var(--text-code); }
+
+/* capability: what changed / evidence / opportunity */
+dl.capability { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: 10px 16px; padding: 14px 16px;
+  border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-alt); font-size: 15px; }
+dl.capability dt { font: 400 12px/1.9 var(--font-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--text-faint); }
+dl.capability dd { margin: 0; color: var(--text-code); min-width: 0; line-height: 1.6; }
+.ev { display: inline-block; font: 400 11px/1 var(--font-mono); padding: 4px 8px; border-radius: 999px; margin-right: 8px;
+  border: 1px solid var(--line-strong); color: var(--text-muted); vertical-align: 1px; }
+.ev-independent, .ev-peer-reviewed, .ev-mixed { color: var(--accent); border-color: transparent; background: var(--accent-soft); }
+.ev-vendor-claim, .ev-preprint { color: var(--medium); border-color: rgba(227, 207, 110, 0.4); }
+
+/* learn */
+.learn { display: flex; gap: 12px; align-items: baseline; }
+.learn > span { font: 400 12px/1 var(--font-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--accent); flex: none; }
+.learn ul { margin: 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 8px; font-family: var(--font-mono); font-size: 12px; }
+.learn li { padding: 4px 10px; border: 1px solid var(--line-strong); border-radius: 999px; color: var(--text-muted); }
+
+.update-note, .uncertainty { font-size: 14px; color: var(--text-muted); display: flex; gap: 10px; align-items: baseline; }
+.update-note span, .uncertainty span { font: 400 12px/1 var(--font-mono); letter-spacing: .08em; text-transform: uppercase; flex: none; }
+.update-note span { color: var(--accent); }
+.uncertainty span { color: var(--medium); }
+
+/* Signal chips */
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chips:empty { display: none; }
+.chip { font: 400 12px/1 var(--font-mono); padding: 5px 9px; border-radius: var(--radius-sm); border: 1px solid var(--line-strong); color: var(--text-muted); white-space: nowrap; }
+.chip-kev, .chip-exploit { color: var(--critical); border-color: rgba(255, 107, 107, 0.5); background: rgba(255, 107, 107, 0.08); }
+.chip-reported { color: var(--high); border-color: rgba(245, 181, 68, 0.45); }
+.chip-poc { color: var(--medium); border-color: rgba(227, 207, 110, 0.4); }
+.chip-sev-crit { color: var(--critical); }
+.chip-sev-high { color: var(--high); }
+.chip-muted { color: var(--text-faint); }
+a.chip-id { color: var(--text); }
+a.chip-id:hover { border-color: var(--accent); color: var(--accent); }
+
+/* Source links */
+.links { list-style: none; margin: 0; padding: 14px 0 0; border-top: 1px solid var(--line); display: grid; gap: 6px; font-size: 14px; }
+.links li { display: flex; gap: 10px; min-width: 0; align-items: baseline; }
+.links a { font-family: var(--font-mono); font-size: 13px; color: var(--accent); white-space: nowrap; }
+.links a:hover { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+.links a::after { content: " ↗"; opacity: .7; }
+.link-title { color: var(--text-faint); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+
+details.more summary { cursor: pointer; font-family: var(--font-mono); font-size: 13px; color: var(--text-faint); list-style: none; user-select: none; padding: 4px 0; }
+details.more summary::-webkit-details-marker { display: none; }
+details.more summary::before { content: "▸ "; }
+details.more[open] summary::before { content: "▾ "; }
+details.more dl { margin: 10px 0 0; display: grid; grid-template-columns: max-content 1fr; gap: 6px 16px; font-size: 14px; }
+details.more dt { color: var(--text-faint); font-family: var(--font-mono); font-size: 12px; line-height: 1.9; }
+details.more dd { margin: 0; color: var(--text-muted); min-width: 0; overflow-wrap: anywhere; }
+
+body.filter-on .card[data-priority="medium"], body.filter-on .card[data-priority="low"] { display: none; }
+
+/* ---------- Briefly noted (writing-list style rows) ---------- */
+.brief-list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line-card); }
+.brief-list li { display: flex; gap: 16px; align-items: baseline; padding: 20px 12px; border-bottom: 1px solid var(--line-card); font-size: 15px; color: var(--text-muted); }
+.brief-list li:hover { background: var(--surface-hover); }
+.brief-list .tag { flex: none; width: 128px; font-family: var(--font-mono); font-size: 12px; color: var(--accent); }
+.brief-list b { color: var(--text-strong); font-weight: 500; }
+.brief-list a { font-family: var(--font-mono); font-size: 13px; color: var(--accent); white-space: nowrap; }
+.brief-list a::after { content: " ↗"; opacity: .7; }
+body.filter-on .brief-list li[data-priority="medium"], body.filter-on .brief-list li[data-priority="low"] { display: none; }
+
+/* ---------- Empty / footer notes ---------- */
+.empty { padding: 48px 24px; text-align: center; border: 1px dashed var(--line-strong); border-radius: var(--radius); color: var(--text-muted); display: flex; flex-direction: column; gap: 10px; }
+.empty h2 { font: 600 24px/1.2 var(--font-display); color: var(--text-strong); }
+.footer-notes { border-top: 1px solid var(--line); padding-top: 32px; display: grid; gap: 14px; }
+.analyst-note { padding: 16px 18px; border-radius: var(--radius); background: var(--surface); border: 1px solid var(--line-card); color: var(--text-muted); font-size: 15px; }
+.analyst-note b { color: var(--text-strong); font-weight: 600; }
+details.health, details.warnings { background: var(--surface); border: 1px solid var(--line-card); border-radius: var(--radius); padding: 14px 18px; }
+details.health summary, details.warnings summary { cursor: pointer; font-family: var(--font-mono); font-size: 13px; color: var(--text-muted); }
+.table-wrap { overflow-x: auto; margin-top: 12px; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; color: var(--text-muted); }
+th { color: var(--text-faint); font: 400 12px/1.4 var(--font-mono); letter-spacing: .06em; text-transform: uppercase; }
+.st { font: 400 11px/1 var(--font-mono); padding: 3px 7px; border-radius: 999px; border: 1px solid var(--line-strong); }
+.st-ok, .st-cached { color: var(--accent); }
+.st-empty { color: var(--text-faint); }
+.st-stale { color: var(--medium); }
+.st-failed { color: var(--critical); }
+.err { display: block; color: var(--text-faint); font-size: 12px; margin-top: 3px; }
+details.warnings ul { margin: 10px 0 0; padding-left: 18px; color: var(--text-faint); font-size: 13px; }
+
+/* ---------- Archive index ---------- */
+.archive-list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line-card); }
+.archive-row { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 24px; padding: 24px 12px; border-bottom: 1px solid var(--line-card); }
+.archive-row:hover { background: var(--surface-hover); }
+.archive-row__date { flex: 1 1 auto; font-family: var(--font-mono); font-size: 15px; font-weight: 500; color: var(--text-strong); }
+.archive-row__count { font-family: var(--font-mono); font-size: 12px; color: var(--accent); }
+
+/* ---------- Site footer ---------- */
+.site-footer { border-top: 1px solid var(--line); }
+.site-footer .container {
+  display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; padding-block: 28px;
+  font-family: var(--font-mono); font-size: 13px; color: var(--text-faint);
+}
+
+/* PGP fingerprint with a download link under it */
+.footer-key { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+.footer-key__link { display: inline-block; padding: 10px 0; margin: -10px 0; color: var(--accent); }
+.footer-key__link:hover { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+@media (max-width: 720px) { .footer-key { align-items: flex-start; } }
+
+/* ---------- Phones ---------- */
+@media (max-width: 720px) {
+  html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; scroll-padding-top: 64px; }
+  .site-nav { padding-block: 12px; }
+  .nav-toggle { display: inline-flex; width: 42px; padding: 0; }
+  .subbar-inner { justify-content: space-between; }
+  .subbar-label { font-family: var(--font-mono); font-size: 13px; color: var(--text-muted); }
+  .bars { position: relative; width: 16px; height: 12px; display: block; }
+  .bars span { position: absolute; left: 0; width: 100%; height: 2px; border-radius: 2px; background: currentColor; transition: transform .2s, opacity .2s, top .2s; }
+  .bars span:nth-child(1) { top: 0; }
+  .bars span:nth-child(2) { top: 5px; }
+  .bars span:nth-child(3) { top: 10px; }
+  .subbar.menu-open .bars span:nth-child(1) { top: 5px; transform: rotate(45deg); }
+  .subbar.menu-open .bars span:nth-child(2) { opacity: 0; }
+  .subbar.menu-open .bars span:nth-child(3) { top: 5px; transform: rotate(-45deg); }
+  .nav {
+    display: none; position: absolute; top: 100%; left: 0; right: 0; flex-direction: column; gap: 2px;
+    padding: 8px 12px 14px; overflow-x: hidden; overflow-y: auto; max-height: calc(100vh - 64px); max-height: calc(100dvh - 64px);
+    background: var(--bg); border-bottom: 1px solid var(--line); box-shadow: 0 18px 30px -18px rgba(0, 0, 0, .6);
+  }
+  .subbar.menu-open .nav { display: flex; }
+  .nav a { padding: 12px; font-size: 14px; }
+  .nav a b { margin-left: auto; }
+
+  .wrap { gap: 44px; padding-bottom: 56px; }
+  .exec-item { grid-template-columns: 26px 1fr; gap: 10px; padding: 16px 4px; }
+  .exec-item .pill { display: none; }
+  .exec-text { font-size: 16px; }
+  .card { padding: 20px 18px; }
+  .card h3 { font-size: 19px; }
+  .card-head .meta { margin-left: 0; flex-basis: 100%; }
+  .summary, .block p, dl.capability dd, .brief-list li { overflow-wrap: anywhere; }
+  dl.capability, details.more dl { grid-template-columns: 1fr; gap: 2px; }
+  dl.capability dd + dt { margin-top: 8px; }
+  details.more dd { margin-bottom: 8px; }
+  .learn, .update-note, .uncertainty { flex-direction: column; align-items: flex-start; gap: 6px; }
+  .links { gap: 10px; }
+  .links li { flex-direction: column; gap: 1px; }
+  .link-title { white-space: normal; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; font-size: 13px; }
+  .brief-list li { flex-direction: column; gap: 6px; padding: 18px 4px; }
+  .brief-list .tag { width: auto; }
+  th, td { padding: 7px 6px; }
+  td:last-child { white-space: nowrap; }
+}
+@media (min-width: 721px) { .subbar-label { display: none; } }
+@media (hover: none) { a.exec-item:hover, .brief-list li:hover, .archive-row:hover { background: none; } }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .cursor { animation: none; }
+  .card { transition: none; }
+}
+@media print {
+  .site-header, .subbar, .tools { display: none; }
+  body { background: #fff; color: #000; }
+  details.more { display: block; }
+}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header"><nav class="container site-nav" aria-label="Primary"><a class="logo" href="../../" aria-label="Home"><span class="logo__prefix">~/</span>MJM<span class="cursor" aria-hidden="true"></span></a><ul class="site-nav__links"><li><a class="site-nav__link" href="../../#about">about</a></li><li><a class="site-nav__link" href="../../daily_download/" aria-current="page">daily download</a></li></ul></nav></header>
+<div class="subbar"><div class="container subbar-inner"><span class="subbar-label">sections</span><nav class="nav" id="section-nav" aria-label="Briefing sections"><a href="#sec-ai-engineering">ai-engineering<b>1</b></a><a href="#sec-ai-security">ai-security<b>3</b></a><a href="#sec-architecture">architecture<b>2</b></a><a href="#sec-incidents">incidents<b>2</b></a><a href="#sec-brief">briefly-noted<b>4</b></a></nav><div class="tools"><button type="button" class="tool" id="filter-toggle" aria-pressed="false" title="Show only critical and high priority">critical + high</button><button type="button" class="tool nav-toggle" id="nav-toggle" aria-expanded="false" aria-controls="section-nav" aria-label="Sections menu" title="Sections"><span class="bars" aria-hidden="true"><span></span><span></span><span></span></span></button></div></div></div><main id="main"><section class="container hero" id="top" aria-labelledby="dd-title"><p class="prompt"><span class="prompt__sym">$</span> ./daily-download --date 2026-11-18</p><h1 id="dd-title" class="hero__title">The Daily Download</h1><p class="hero__date">Wednesday, November 18, 2026</p><div class="hero__meta"><span class="hero__stats">8 findings · 4 briefly noted</span><a class="text-link" href="../">cd ../latest →</a><a class="text-link" href="./">ls ./archive →</a></div></section><div class="container wrap"><section class="panel executive" id="executive"><div class="panel-head"><p class="eyebrow">// executive briefing</p><h2 class="panel-title">Executive Briefing</h2></div><ol><li class="exec-critical"><a class="exec-item" href="#C002"><span class="num">01</span><span class="exec-text">Two malicious versions of Microsoft&#x27;s agent-framework PyPI package (1.26.1 and 1.26.2) stole cloud, CI and Azure managed-identity credentials on every Python start; if you installed either, rotate everything reachable from that environment.</span><span class="pill pill-critical">critical</span></a></li><li class="exec-critical"><a class="exec-item" href="#C015"><span class="num">02</span><span class="exec-text">Java4Shell (CVE-2026-114938) is a heap overflow in OpenJDK&#x27;s AVX-512 Base64 decoder that Wiz says gives pre-auth RCE in Jira, Confluence, Keycloak, Jenkins and Spring Boot apps on affected x86 hardware; patches shipped November 17.</span><span class="pill pill-critical">critical</span></a></li><li class="exec-high"><a class="exec-item" href="#C020"><span class="num">03</span><span class="exec-text">Researchers took over the Hugging Face account behind Kokoro, a speech model with about 13 million monthly downloads, by registering a lapsed domain and resetting the password; nothing would have flagged swapped weights.</span><span class="pill pill-high">high</span></a></li><li class="exec-high"><a class="exec-item" href="#C001"><span class="num">04</span><span class="exec-text">A flaw in AWS&#x27;s Private CA issuer for Kubernetes let a user in one namespace get certificates, including subordinate CAs, signed with another namespace&#x27;s CA and credentials.</span><span class="pill pill-high">high</span></a></li><li class="exec-medium"><a class="exec-item" href="#C003"><span class="num">05</span><span class="exec-text">OpenAI released GPT-6.2 Astra and Sol; Astra ranks second on Artificial Analysis and is the first OpenAI model its system card rates High for AI self-improvement, while early reviews are mixed.</span><span class="pill pill-medium">medium</span></a></li></ol></section><section class="panel learning" id="learning"><div class="panel-head"><p class="eyebrow">// worth learning</p><h2 class="panel-title">Worth learning</h2></div><ul><li><b>Python install-time and startup persistence (.pth files)</b><p>The agent-framework payload ran on every interpreter start without an import; dependency review needs to cover what runs before your code does. <a href="#C002">see finding ↓</a></p></li><li><b>Model artifact supply chain</b><p>Account recovery through expired domains and unvetted weight updates make model hubs a supply-chain risk like package registries; pin revisions and verify hashes. <a href="#C020">see finding ↓</a></p></li><li><b>Multi-tenant isolation in Kubernetes controllers</b><p>Controllers that hold credentials for many namespaces must check which namespace a request may use; the Private CA issuer did not. <a href="#C001">see finding ↓</a></p></li><li><b>From AI findings to shipped fixes</b><p>GitHub&#x27;s pilot cut about 9,800 AI findings to 99 checked reports and got 55 fixed; triage and fix delivery are now the bottleneck. <a href="#C021">see finding ↓</a></p></li></ul></section><section class="section" id="sec-ai-engineering"><div class="section-head"><p class="eyebrow">// ai-engineering</p><h2 class="section-title">AI Innovation &amp; Engineering<small>1</small></h2></div><div class="grid">
+<article class="card prio-medium" id="C003" data-priority="medium">
+  <header class="card-head">
+    <span class="pill pill-medium">medium</span>
+    
+    <span class="conf conf-confirmed">Confirmed</span>
+    <span class="meta">OpenAI News &amp; Research · Nov 17, 12:45</span>
+  </header>
+  <h3>OpenAI releases GPT-6.2 Astra and Sol; Astra ranks #2, reviews mixed</h3>
+  
+  <p class="summary">GPT-6.2 Astra is OpenAI&#x27;s higher-capability model and Sol the cheaper workhorse; both have 1M context and 128K output and are rolling out in ChatGPT Work, Codex and the API. Astra is priced at $8/$40 per million input/output tokens and Sol at $2/$10. Early testers are split: some called Astra unusable in their agent setups, while others blamed harness issues.</p>
+  <dl class="capability"><dt>What changed</dt><dd>Sol matches September&#x27;s Astra at about 15% of the cost per task, per Artificial Analysis.</dd><dt>Evidence</dt><dd><span class="ev ev-mixed">Vendor + independent</span>Artificial Analysis Intelligence Index: Astra 62, second behind Claude Fable 5.2 at 65. OpenAI reports Astra beats GPT-6 Astra by 5.2 points on Agents&#x27; Last Exam 1.1 at under a third of the cost. Most other benchmark figures come from third-party tweets.</dd><dt>Opportunity</dt><dd>Cheaper near-frontier models lower the cost of running agent workflows like triage and code review at scale.</dd></dl>
+  <div class="block block-why"><h4>Why it matters to you</h4><p>OpenAI&#x27;s system card rates Astra High for AI self-improvement, a first for an externally released OpenAI model, which matters for how much autonomy and access agent deployments grant it.</p></div>
+  
+  <div class="learn"><span>Learn</span><ul><li>Reading model system cards and preparedness ratings</li></ul></div>
+  
+  <div class="chips"></div>
+  <ul class="links"><li><a href="https://openai.com/index/introducing-gpt-6-2-astra-sol" target="_blank" rel="noopener noreferrer">OpenAI News &amp; Research</a><span class="link-title">Introducing GPT-6.2 Astra and Sol</span></li><li><a href="https://latent.space/p/ainews-gpt-6-2-astra-the-2-frontier-model-is-better-and-20-600-cheaper-but-has-mixed-reviews-6-2-sol/" target="_blank" rel="noopener noreferrer">Latent Space</a><span class="link-title">[AINews] GPT-6.2 Astra, the #2 Frontier Model is better and 20%-600% cheaper, but has mixed reviews; 6.2 Sol…</span></li></ul>
+  <details class="more"><summary>Details</summary><dl><dt>Relevance score</dt><dd>51/100 — topics: ai_engineering, model_release +24; category ai-engineering +14; primary source +8; source priority +4; recent +1</dd></dl></details>
+</article></div></section><section class="section" id="sec-ai-security"><div class="section-head"><p class="eyebrow">// ai-security</p><h2 class="section-title">AI &amp; Agentic Security<small>3</small></h2></div><div class="grid">
+<article class="card prio-high" id="C020" data-priority="high">
+  <header class="card-head">
+    <span class="pill pill-high">high</span>
+    
+    <span class="conf conf-confirmed">Confirmed</span>
+    <span class="meta">BleepingComputer · Nov 17, 13:21</span>
+  </header>
+  <h3>Researchers hijack Kokoro TTS model&#x27;s Hugging Face account via an expired domain</h3>
+  
+  <p class="summary">Alon Hertz and his team registered hexgrad.com, the lapsed domain listed in Kokoro&#x27;s DONATE.md, and used it to reset the publisher&#x27;s Hugging Face password. Kokoro-82M has about 13 million monthly downloads and is used in projects from Google, NVIDIA, AMD, Intel and AWS. They showed weights can be altered in 87 seconds on a gaming GPU so the model speaks different words than its input, without changing application code, and that Hugging Face would not flag such an update; they did not upload the altered weights.</p>
+  
+  <div class="block block-why"><h4>Why it matters to you</h4><p>Model hubs have the same account-takeover risks as package registries, but weight changes are harder to review than code. Abandoned projects with expired domains are easy targets.</p></div>
+  <div class="block block-action"><h4>Action</h4><p>Pin Hugging Face models to a specific commit revision and verify file hashes, mirror critical models internally, and track maintainer activity for models you depend on.</p></div>
+  <div class="learn"><span>Learn</span><ul><li>Pinning model revisions and verifying hashes</li><li>Expired-domain account takeover</li></ul></div>
+  <div class="uncertainty"><span>Uncertain</span>Hugging Face had not responded to the researcher or to BleepingComputer at publication.</div>
+  <div class="chips"></div>
+  <ul class="links"><li><a href="https://www.bleepingcomputer.com/news/security/researchers-hijack-hugging-face-account-for-popular-kokoro-ai-model/" target="_blank" rel="noopener noreferrer">BleepingComputer</a><span class="link-title">Researchers hijack Hugging Face account for popular Kokoro AI model</span></li></ul>
+  <details class="more"><summary>Details</summary><dl><dt>Relevance score</dt><dd>32/100 — topics: ai_security, aws +22; category incidents +2; established source +5; source priority +2; recent +1</dd></dl></details>
+</article>
+<article class="card prio-medium" id="C021" data-priority="medium">
+  <header class="card-head">
+    <span class="pill pill-medium">medium</span>
+    
+    <span class="conf conf-confirmed">Confirmed</span>
+    <span class="meta">GitHub Security Lab · Nov 17, 13:29</span>
+  </header>
+  <h3>GitHub and Microsoft turn ~9,800 AI findings into 99 verified reports; 55 already fixed</h3>
+  
+  <p class="summary">In the Codename MDASH pilot, Microsoft&#x27;s agentic scanning harness scanned six open-source projects (AutoGPT, Caddy, Express, FastMCP, ImageMagick and Netty) and proposed fixes. A GitHub Security Lab triage agent deduplicated and validated the findings, seven Microsoft researchers checked the rest by hand, and 99 reports went out privately with proofs of concept and suggested fixes. By November 15 maintainers had fixed 55; Caddy fixed all 22 of its reports within a week.</p>
+  
+  <div class="block block-why"><h4>Why it matters to you</h4><p>AI vulnerability discovery is producing far more findings than maintainers can handle. The pilot suggests the useful unit is a verified report with a fix, and that manual verification is the current bottleneck.</p></div>
+  <div class="block block-action"><h4>Action</h4><p>If you run AI scanning internally, measure fixes shipped rather than findings, and put a validation stage before anything reaches engineering teams.</p></div>
+  <div class="learn"><span>Learn</span><ul><li>Triage pipelines for AI-generated vulnerability findings</li></ul></div>
+  
+  <div class="chips"></div>
+  <ul class="links"><li><a href="https://github.blog/open-source/maintainers/maintainers-dont-need-more-ai-bug-reports-they-need-fixes/" target="_blank" rel="noopener noreferrer">GitHub Security Lab</a><span class="link-title">Maintainers don’t need more AI bug reports. They need fixes.</span></li></ul>
+  <details class="more"><summary>Details</summary><dl><dt>Relevance score</dt><dd>31/100 — category architecture +10; primary source +8; source priority +4; original research / analysis +8; recent +1</dd></dl></details>
+</article>
+<article class="card prio-medium" id="C004" data-priority="medium">
+  <header class="card-head">
+    <span class="pill pill-medium">medium</span>
+    
+    <span class="conf conf-preliminary">Preliminary</span>
+    <span class="meta">arXiv cs.CR (AI-security papers only) · Nov 18, 00:00</span>
+  </header>
+  <h3>Study: an AI agent extracted system-prompt secrets from about eight in ten of 363 models</h3>
+  
+  <p class="summary">Researchers gave each of 363 OpenRouter models a 16-character secret in its system prompt and used an AI agent (OpenCode) to try to extract it, recording which models leaked and through which techniques. The title reports that about eight in ten leaked the secret.</p>
+  
+  <div class="block block-why"><h4>Why it matters to you</h4><p>System prompts are not a secure place for secrets, and automated agents make extraction cheap to attempt at scale.</p></div>
+  <div class="block block-action"><h4>Action</h4><p>Keep credentials and sensitive logic out of system prompts; enforce access control outside the model.</p></div>
+  <div class="learn"><span>Learn</span><ul><li>Instruction hierarchy and its limits</li></ul></div>
+  
+  <div class="chips"></div>
+  <ul class="links"><li><a href="https://arxiv.org/abs/2611.21956" target="_blank" rel="noopener noreferrer">arXiv cs.CR (AI-security papers only)</a><span class="link-title">Eight in Ten LLMs Leak System-Prompt Secrets: Nevan, an Agentic Capture-the-Flag Study</span></li></ul>
+  <details class="more"><summary>Details</summary><dl><dt>Relevance score</dt><dd>49/100 — topics: ai_engineering, model_release, ai_security +32; category ai-security +14; community source +0; recent +3</dd></dl></details>
+</article></div></section><section class="section" id="sec-architecture"><div class="section-head"><p class="eyebrow">// architecture</p><h2 class="section-title">Cloud &amp; Security Architecture<small>2</small></h2></div><div class="grid">
+<article class="card prio-high" id="C001" data-priority="high">
+  <header class="card-head">
+    <span class="pill pill-high">high</span>
+    
+    <span class="conf conf-confirmed">Confirmed</span>
+    <span class="meta">AWS Security Bulletins · Nov 17, 15:11</span>
+  </header>
+  <h3>AWS Private CA issuer for Kubernetes let one namespace sign with another namespace&#x27;s CA</h3>
+  
+  <p class="summary">CVE-2026-130622 and CVE-2026-130623 in aws-privateca-issuer before 1.12.0 let an authenticated user who can create namespace-scoped issuers obtain certificates, including subordinate CA certificates, signed by another namespace&#x27;s AWS Private CA using that namespace&#x27;s stored AWS credentials. The flaw is incorrect authorization in credential loading for namespace-scoped issuers.</p>
+  
+  <div class="block block-why"><h4>Why it matters to you</h4><p>Namespaces are a common tenant boundary, and cluster controllers that hold credentials for many tenants can break it with one missing check. A subordinate CA certificate from another tenant&#x27;s CA is a full trust compromise for anything that trusts that CA.</p></div>
+  <div class="block block-action"><h4>Action</h4><p>Upgrade aws-privateca-issuer to 1.12.0 or later, review certificates issued by each Private CA for unexpected subordinates, and limit who can create issuers.</p></div>
+  <div class="learn"><span>Learn</span><ul><li>Confused-deputy risks in Kubernetes controllers</li><li>Name constraints and path length on subordinate CAs</li></ul></div>
+  
+  <div class="chips"><span class="chip chip-muted">No known exploitation</span><a class="chip chip-id" href="https://nvd.nist.gov/vuln/detail/CVE-2026-130622" target="_blank" rel="noopener noreferrer">CVE-2026-130622</a><a class="chip chip-id" href="https://nvd.nist.gov/vuln/detail/CVE-2026-130623" target="_blank" rel="noopener noreferrer">CVE-2026-130623</a></div>
+  <ul class="links"><li><a href="https://aws.amazon.com/security/security-bulletins/rss/2026-187-aws/" target="_blank" rel="noopener noreferrer">AWS Security Bulletins</a><span class="link-title">CVE-2026-130622 and CVE-2026-130623 - Incorrect authorization in credential loading and handling for…</span></li></ul>
+  <details class="more"><summary>Details</summary><dl><dt>Affected</dt><dd>aws-privateca-issuer before 1.12.0</dd><dt>Mitigation</dt><dd>Upgrade to 1.12.0.</dd><dt>Relevance score</dt><dd>55/100 — topics: cloud_native, aws, systemic, prevalence +32; category architecture +10; primary source +8; source priority +4; recent +1</dd></dl></details>
+</article>
+<article class="card prio-medium" id="C010" data-priority="medium">
+  <header class="card-head">
+    <span class="pill pill-medium">medium</span>
+    
+    <span class="conf conf-confirmed">Confirmed</span>
+    <span class="meta">GitHub Advisory Database (critical/high) · Nov 17, 16:00</span>
+  </header>
+  <h3>SimpleSAMLphp SAML2 fix incomplete: unsigned embedded Response still bypasses artifact checks</h3>
+  
+  <p class="summary">The fix for CVE-2026-49283, a cross-IdP authentication bypass in the SAML2 library&#x27;s HTTP-Artifact binding, only verifies the embedded Response&#x27;s signature when the Response is signed. An unsigned embedded Response skips verification, and the library does not bind the embedded Issuer to the expected IdP. The advisory rates it CVSS 8.7 and affects the released v6.2.3.</p>
+  
+  <div class="block block-why"><h4>Why it matters to you</h4><p>SAML bugs repeatedly come from verification that runs only if a signature is present. A fix that checks signatures without requiring them leaves the original bypass open.</p></div>
+  <div class="block block-action"><h4>Action</h4><p>Watch for a patched SAML2 release and, until then, require signed Responses in IdP and SP configuration where possible.</p></div>
+  <div class="learn"><span>Learn</span><ul><li>SAML signature validation pitfalls</li><li>HTTP-Artifact binding</li></ul></div>
+  
+  <div class="chips"><span class="chip chip-muted">No known exploitation</span><span class="chip chip-sev-high">CVSS v3.x 8.7</span><span class="chip chip-muted" title="FIRST EPSS: probability of exploitation in the next 30 days">EPSS 0.5% · p41</span><a class="chip chip-id" href="https://nvd.nist.gov/vuln/detail/CVE-2026-110782" target="_blank" rel="noopener noreferrer">CVE-2026-110782</a><a class="chip chip-id" href="https://nvd.nist.gov/vuln/detail/CVE-2026-49283" target="_blank" rel="noopener noreferrer">CVE-2026-49283</a><a class="chip chip-id" href="https://github.com/advisories/GHSA-6929-8p9f-26jx" target="_blank" rel="noopener noreferrer">GHSA-6929-8p9f-26jx</a><a class="chip chip-id" href="https://github.com/advisories/GHSA-r7hw-jx6r-756g" target="_blank" rel="noopener noreferrer">GHSA-r7hw-jx6r-756g</a></div>
+  <ul class="links"><li><a href="https://github.com/advisories/GHSA-r7hw-jx6r-756g" target="_blank" rel="noopener noreferrer">GitHub Advisory Database (critical/high)</a><span class="link-title">SAML2: Incomplete fix of CVE-2026-49283: unsigned embedded Response bypasses HTTP-Artifact signature…</span></li></ul>
+  <details class="more"><summary>Details</summary><dl><dt>Affected</dt><dd>SAML2 PHP library v6.2.3 (master 31c72c1d)</dd><dt>Relevance score</dt><dd>40/100 — topics: identity_authz, appsec_architecture +18; category architecture +10; primary source +8; CVSS 8.7 +2; recent +2</dd></dl></details>
+</article></div></section><section class="section" id="sec-incidents"><div class="section-head"><p class="eyebrow">// incidents</p><h2 class="section-title">Exceptional Incidents<small>2</small></h2></div><div class="grid">
+<article class="card prio-critical" id="C002" data-priority="critical">
+  <header class="card-head">
+    <span class="pill pill-critical">critical</span>
+    
+    <span class="conf conf-confirmed">Confirmed</span>
+    <span class="meta">Wiz Blog &amp; Research · Nov 17, 17:03</span>
+  </header>
+  <h3>Malicious agent-framework 1.26.1 and 1.26.2 on PyPI stole Azure, CI and cloud credentials</h3>
+  
+  <p class="summary">On November 17, versions 1.26.1 and 1.26.2 of Microsoft&#x27;s agent-framework package (about 200,000 downloads a month) were published with a credential stealer and removed about an hour later. A .pth file ran the payload on every Python start, even without importing the package, collecting secret-like environment variables, secrets from other processes, credential files (Azure CLI, .npmrc, .git-credentials, Docker, Hugging Face tokens), Azure DevOps OIDC tokens and managed-identity tokens; 1.26.2 also stole GitHub Actions OIDC tokens. How the versions were published is unconfirmed; 1.26.1 had no matching tag or release and was wheel-only.</p>
+  
+  <div class="block block-why"><h4>Why it matters to you</h4><p>AI agent frameworks run in CI and cloud workloads full of high-value credentials, which makes them prime supply-chain targets. OIDC and managed-identity tokens remove long-lived keys, but a process running inside the workload can still mint and exfiltrate them.</p></div>
+  <div class="block block-action"><h4>Action</h4><p>Search lockfiles, CI logs, virtual environments and images for agent-framework 1.26.1 or 1.26.2; pin 1.26.0; rotate every secret reachable from affected hosts and runners; review Azure sign-ins for managed identities and Entra federated credentials used by affected workflows.</p></div>
+  <div class="learn"><span>Learn</span><ul><li>Python .pth startup hooks</li><li>Scoping OIDC federation for CI workloads</li></ul></div>
+  <div class="uncertainty"><span>Uncertain</span>Root cause of the publication (account, token or pipeline) is not yet confirmed.</div>
+  <div class="chips"></div>
+  <ul class="links"><li><a href="https://www.wiz.io/blog/malicious-version-of-microsofts-agent-framework-published-to-pypi" target="_blank" rel="noopener noreferrer">Wiz Blog &amp; Research</a><span class="link-title">Microsoft agent-framework Compromised: Credential Stealer Targets Azure and CI Pipelines</span></li></ul>
+  <details class="more"><summary>Details</summary><dl><dt>Affected</dt><dd>agent-framework 1.26.1 and 1.26.2 on PyPI</dd><dt>Mitigation</dt><dd>Pin 1.26.0 and rotate exposed credentials.</dd><dt>Relevance score</dt><dd>54/100 — topics: ai_engineering, cloud_native +22; category architecture +10; primary source +8; source priority +4; original research / analysis +8; recent +2</dd></dl></details>
+</article>
+<article class="card prio-critical" id="C015" data-priority="critical">
+  <header class="card-head">
+    <span class="pill pill-critical">critical</span>
+    
+    <span class="conf conf-confirmed">Confirmed</span>
+    <span class="meta">Wiz Blog &amp; Research · Nov 17, 18:15</span>
+  </header>
+  <h3>Java4Shell: OpenJDK AVX-512 Base64 bug enables pre-auth RCE in major Java apps (CVE-2026-114938)</h3>
+  
+  <p class="summary">A bounds miscalculation in the JVM&#x27;s AVX-512 VBMI-optimized Base64 decoding intrinsic causes a heap out-of-bounds write when input has unexpected trailing padding, rated CVSS 9.2. It affects OpenJDK 17.0.6 and later and downstream distributions on x86-64 CPUs with AVX-512 VBMI; ARM64 is not affected. Wiz lists Jira, Confluence, Keycloak, Artifactory and Jenkins as proven vulnerable to pre-auth RCE, and says its AI harness built a proof of concept within two hours. Calif discovered it; no public exploit or in-the-wild use is reported.</p>
+  
+  <div class="block block-why"><h4>Why it matters to you</h4><p>A bug in a JIT intrinsic is reachable from any code path that decodes attacker-controlled Base64, which is nearly every web app and identity system. It also shows exploitation speed: an AI harness produced a working exploit before full details were public.</p></div>
+  <div class="block block-action"><h4>Action</h4><p>Apply the November 17 Java updates. Until then, set -XX:-UseBASE64Intrinsics (or -XX:UseAVX=2) on affected x86 hosts and restrict access to exposed management portals; WAF rules are unlikely to cover all paths.</p></div>
+  <div class="learn"><span>Learn</span><ul><li>JIT compiler intrinsics as attack surface</li><li>Hardware-dependent vulnerability exposure</li></ul></div>
+  <div class="uncertainty"><span>Uncertain</span>Fixed build numbers and whether the intrinsic is on by default on all affected hardware are not stated in Wiz&#x27;s post.</div>
+  <div class="chips"><span class="chip chip-muted">No known exploitation</span><a class="chip chip-id" href="https://nvd.nist.gov/vuln/detail/CVE-2026-114938" target="_blank" rel="noopener noreferrer">CVE-2026-114938</a></div>
+  <ul class="links"><li><a href="https://www.wiz.io/blog/cve-2026-114938-rce-java4shell-openjdk" target="_blank" rel="noopener noreferrer">Wiz Blog &amp; Research</a><span class="link-title">CVE-2026-114938 OpenJDK RCE (Java4Shell): Everything You Need to Know</span></li><li><a href="https://www.aquasec.com/blog/java4shell-vulnerability-how-should-security-teams-identify-and-reduce-exposure/" target="_blank" rel="noopener noreferrer">Aqua Security Blog</a><span class="link-title">Java4Shell Vulnerability: How Should Security Teams Identify and Reduce Exposure?</span></li></ul>
+  <details class="more"><summary>Details</summary><dl><dt>Affected</dt><dd>OpenJDK 17.0.6 and later, and downstream builds, on x86-64 with AVX-512 VBMI</dd><dt>Mitigation</dt><dd>Patch, or disable the Base64 intrinsic with -XX:-UseBASE64Intrinsics.</dd><dt>Relevance score</dt><dd>35/100 — category architecture +10; primary source +8; source priority +4; original research / analysis +8; 2 sources +3; recent +2</dd></dl></details>
+</article></div></section><section class="section" id="sec-brief"><div class="section-head"><p class="eyebrow">// briefly noted</p><h2 class="section-title">Briefly noted<small>4</small></h2></div><ul class="brief-list"><li class="brief" id="C017" data-priority="low"><span class="tag">#ai-engineering</span><div><b>OpenAI Agents SDK for Python 0.25.0</b> <span class="brief-text">Adds utilities for third-party session adapters, removes the Runloop sandbox provider, and preserves nested tool approval decisions across resume.</span> <a href="https://github.com/openai/openai-agents-python/releases/tag/v0.25.0" target="_blank" rel="noopener noreferrer">OpenAI Agents SDK Releases</a></div></li><li class="brief" id="C008" data-priority="low"><span class="tag">#ai-security</span><div><b>Preprint: privacy-preserving web agents can still leak data from reachable sources</b> <span class="brief-text">GapLeak shows a website can request fields an agent is not authorized to share, pushing goal-driven agents to fetch them from more sensitive sources.</span> <a href="https://arxiv.org/abs/2611.22223" target="_blank" rel="noopener noreferrer">arXiv cs.CR (AI-security papers only)</a></div></li><li class="brief" id="C005" data-priority="low"><span class="tag">#ai-security</span><div><b>Preprint: one bit flip in a shared KV-cache block quietly changes many LLM responses</b> <span class="brief-text">Prefix caching keeps one physical copy of a shared system prompt&#x27;s cache, so a single corruption affects every request that reads it.</span> <a href="https://arxiv.org/abs/2611.22243" target="_blank" rel="noopener noreferrer">arXiv cs.CR (AI-security papers only)</a></div></li><li class="brief" id="C009" data-priority="low"><span class="tag">#architecture</span><div><b>AWS efs-utils race lets a user on a shared host access another EFS mount&#x27;s file system</b> <span class="brief-text">A time-of-check time-of-use race in local port selection before 3.3.5 can expose another mount&#x27;s file system and IAM identity; upgrade to 3.3.5.</span> <a href="https://aws.amazon.com/security/security-bulletins/rss/2026-186-aws/" target="_blank" rel="noopener noreferrer">AWS Security Bulletins</a></div></li></ul></section><section class="footer-notes"><p class="analyst-note"><b>Analyst note.</b> Excluded LangChain product and explainer posts, OpenAI&#x27;s Le Figaro partnership, an AWS WAF onboarding post, Cloudflare&#x27;s Quad9 policy post and company profile, Datasette Lite, a qbee-agent local privilege escalation and a Solana bridge preprint. Google Cloud Blog (identity &amp; security) and Google Threat Intelligence timed out, so Google security posts from the last day may be missing.</p><details class="health"><summary>Source health: 54/56 sources OK, 2 failed or stale</summary><div class="table-wrap"><table><thead><tr><th>Source</th><th>Status</th><th>Items</th><th>Last success</th></tr></thead><tbody><tr><td>Google Cloud Blog (identity &amp; security)</td><td><span class="st st-stale">stale</span><span class="err">FetchError: TimeoutError: The read operation timed out</span></td><td>20</td><td>Nov 16, 16:39</td></tr><tr><td>Google Threat Intelligence (Mandiant)</td><td><span class="st st-stale">stale</span><span class="err">FetchError: TimeoutError: The read operation timed out</span></td><td>20</td><td>Nov 16, 16:39</td></tr><tr><td>AWS Security Blog</td><td><span class="st st-ok">ok</span></td><td>20</td><td>Nov 18, 08:27</td></tr><tr><td>AWS Security Bulletins</td><td><span class="st st-ok">ok</span></td><td>46</td><td>Nov 18, 08:27</td></tr><tr><td>Anthropic Engineering</td><td><span class="st st-ok">ok</span></td><td>24</td><td>Nov 18, 08:27</td></tr><tr><td>Anthropic News</td><td><span class="st st-ok">ok</span></td><td>22</td><td>Nov 18, 08:27</td></tr><tr><td>Anthropic Research</td><td><span class="st st-ok">ok</span></td><td>24</td><td>Nov 18, 08:27</td></tr><tr><td>Aqua Security Blog</td><td><span class="st st-ok">ok</span></td><td>10</td><td>Nov 18, 08:27</td></tr><tr><td>Artificial Analysis</td><td><span class="st st-ok">ok</span></td><td>12</td><td>Nov 18, 08:27</td></tr><tr><td>BleepingComputer</td><td><span class="st st-ok">ok</span></td><td>15</td><td>Nov 18, 08:27</td></tr><tr><td>CISA Cybersecurity Advisories</td><td><span class="st st-ok">ok</span></td><td>12</td><td>Nov 18, 08:27</td></tr><tr><td>CISA Known Exploited Vulnerabilities</td><td><span class="st st-ok">ok</span></td><td>34</td><td>Nov 18, 08:27</td></tr><tr><td>CISA News (incl. Secure by Design)</td><td><span class="st st-ok">ok</span></td><td>10</td><td>Nov 18, 08:27</td></tr><tr><td>Claude Code Releases</td><td><span class="st st-empty">empty</span></td><td>0</td><td>Nov 18, 08:27</td></tr><tr><td>Cloudflare Blog (security)</td><td><span class="st st-ok">ok</span></td><td>20</td><td>Nov 18, 08:27</td></tr><tr><td>Datadog Security Labs</td><td><span class="st st-ok">ok</span></td><td>30</td><td>Nov 18, 08:27</td></tr><tr><td>Embrace The Red (Johann Rehberger)</td><td><span class="st st-ok">ok</span></td><td>231</td><td>Nov 18, 08:27</td></tr><tr><td>GKE Security Bulletins</td><td><span class="st st-ok">ok</span></td><td>30</td><td>Nov 18, 08:27</td></tr><tr><td>GitHub Advisories (Go ecosystem)</td><td><span class="st st-ok">ok</span></td><td>1</td><td>Nov 18, 08:27</td></tr><tr><td>GitHub Advisory Database (critical/high)</td><td><span class="st st-ok">ok</span></td><td>6</td><td>Nov 18, 08:27</td></tr><tr><td>GitHub Security Lab</td><td><span class="st st-ok">ok</span></td><td>10</td><td>Nov 18, 08:27</td></tr><tr><td>Go Releases (golang/go tags)</td><td><span class="st st-ok">ok</span></td><td>10</td><td>Nov 18, 08:27</td></tr><tr><td>Go Vulnerability Database</td><td><span class="st st-empty">empty</span></td><td>0</td><td>Nov 18, 08:27</td></tr><tr><td>Google Cloud Security Bulletins</td><td><span class="st st-ok">ok</span></td><td>30</td><td>Nov 18, 08:27</td></tr><tr><td>Google DeepMind Blog</td><td><span class="st st-ok">ok</span></td><td>100</td><td>Nov 18, 08:27</td></tr><tr><td>Google Online Security Blog</td><td><span class="st st-ok">ok</span></td><td>25</td><td>Nov 18, 08:27</td></tr><tr><td>Google Project Zero</td><td><span class="st st-ok">ok</span></td><td>10</td><td>Nov 18, 08:27</td></tr><tr><td>Hugging Face Blog</td><td><span class="st st-ok">ok</span></td><td>400</td><td>Nov 18, 08:27</td></tr><tr><td>Hugging Face Daily Papers</td><td><span class="st st-ok">ok</span></td><td>11</td><td>Nov 18, 08:27</td></tr><tr><td>Krebs on Security</td><td><span class="st st-ok">ok</span></td><td>10</td><td>Nov 18, 08:27</td></tr><tr><td>Kubernetes Blog</td><td><span class="st st-ok">ok</span></td><td>50</td><td>Nov 18, 08:27</td></tr><tr><td>Kubernetes Official CVE Feed</td><td><span class="st st-ok">ok</span></td><td>95</td><td>Nov 18, 08:27</td></tr><tr><td>LangChain Blog</td><td><span class="st st-ok">ok</span></td><td>99</td><td>Nov 18, 08:27</td></tr><tr><td>LangGraph Releases</td><td><span class="st st-empty">empty</span></td><td>0</td><td>Nov 18, 08:27</td></tr><tr><td>Latent Space</td><td><span class="st st-ok">ok</span></td><td>20</td><td>Nov 18, 08:27</td></tr><tr><td>MCP Specification Releases</td><td><span class="st st-ok">ok</span></td><td>6</td><td>Nov 18, 08:27</td></tr><tr><td>METR</td><td><span class="st st-ok">ok</span></td><td>103</td><td>Nov 18, 08:27</td></tr><tr><td>MITRE ATLAS (data releases)</td><td><span class="st st-ok">ok</span></td><td>10</td><td>Nov 18, 08:27</td></tr><tr><td>Meta AI Blog</td><td><span class="st st-ok">ok</span></td><td>5</td><td>Nov 18, 08:27</td></tr><tr><td>Model Context Protocol Blog</td><td><span class="st st-ok">ok</span></td><td>29</td><td>Nov 18, 08:27</td></tr><tr><td>Mozilla Security Blog (incl. root store / PKI)</td><td><span class="st st-ok">ok</span></td><td>10</td><td>Nov 18, 08:27</td></tr><tr><td>OWASP GenAI Security Project</td><td><span class="st st-ok">ok</span></td><td>10</td><td>Nov 18, 08:27</td></tr><tr><td>OpenAI Agents SDK Releases</td><td><span class="st st-ok">ok</span></td><td>3</td><td>Nov 18, 08:27</td></tr><tr><td>OpenAI Codex CLI Releases</td><td><span class="st st-empty">empty</span></td><td>0</td><td>Nov 18, 08:27</td></tr><tr><td>OpenAI News &amp; Research</td><td><span class="st st-ok">ok</span></td><td>400</td><td>Nov 18, 08:27</td></tr><tr><td>OpenSSF Blog</td><td><span class="st st-ok">ok</span></td><td>10</td><td>Nov 18, 08:27</td></tr><tr><td>PortSwigger Research</td><td><span class="st st-ok">ok</span></td><td>40</td><td>Nov 18, 08:27</td></tr><tr><td>Qwen (open-weight models)</td><td><span class="st st-ok">ok</span></td><td>44</td><td>Nov 18, 08:27</td></tr><tr><td>Simon Willison</td><td><span class="st st-ok">ok</span></td><td>15</td><td>Nov 18, 08:27</td></tr><tr><td>Snyk Labs</td><td><span class="st st-ok">ok</span></td><td>5</td><td>Nov 18, 08:27</td></tr><tr><td>The Go Blog</td><td><span class="st st-ok">ok</span></td><td>10</td><td>Nov 18, 08:27</td></tr><tr><td>The Record</td><td><span class="st st-ok">ok</span></td><td>5</td><td>Nov 18, 08:27</td></tr><tr><td>Trail of Bits</td><td><span class="st st-ok">ok</span></td><td>20</td><td>Nov 18, 08:27</td></tr><tr><td>Wiz Blog &amp; Research</td><td><span class="st st-ok">ok</span></td><td>400</td><td>Nov 18, 08:27</td></tr><tr><td>arXiv cs.CR (AI-security papers only)</td><td><span class="st st-ok">ok</span></td><td>29</td><td>Nov 18, 08:27</td></tr><tr><td>vLLM Releases</td><td><span class="st st-ok">ok</span></td><td>3</td><td>Nov 18, 08:27</td></tr></tbody></table></div></details></section></div></main>
+<footer class="site-footer"><div class="container"><span>© 2026 Michael Martire</span><div class="footer-key"><span>pgp: 3663 1574 34A4 6C1E 93BA DFD8 79B2 B4F7 0256 5E3D</span><a class="footer-key__link" href="../../pgp.asc" download="michael-martire-pgp.asc">download public key ↓</a></div></div></footer>
+<script>(function () {
+  "use strict";
+
+  var filterBtn = document.getElementById("filter-toggle");
+  if (filterBtn) {
+    filterBtn.addEventListener("click", function () {
+      var on = !document.body.classList.contains("filter-on");
+      document.body.classList.toggle("filter-on", on);
+      filterBtn.setAttribute("aria-pressed", on ? "true" : "false");
+    });
+  }
+
+  // Phone layout: the section list is a dropdown behind the menu button.
+  var bar = document.querySelector(".subbar");
+  var navToggle = document.getElementById("nav-toggle");
+  if (bar && navToggle) {
+    var setMenu = function (open) {
+      bar.classList.toggle("menu-open", open);
+      navToggle.setAttribute("aria-expanded", open ? "true" : "false");
+    };
+    navToggle.addEventListener("click", function (e) {
+      e.stopPropagation();
+      setMenu(!bar.classList.contains("menu-open"));
+    });
+    document.querySelectorAll("#section-nav a").forEach(function (a) {
+      a.addEventListener("click", function () { setMenu(false); });
+    });
+    document.addEventListener("click", function (e) {
+      if (bar.classList.contains("menu-open") && !bar.contains(e.target)) { setMenu(false); }
+    });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && bar.classList.contains("menu-open")) { setMenu(false); navToggle.focus(); }
+    });
+    if (window.matchMedia) {
+      var wide = window.matchMedia("(min-width: 721px)");
+      var onWide = function () { if (wide.matches) { setMenu(false); } };
+      if (wide.addEventListener) { wide.addEventListener("change", onWide); } else if (wide.addListener) { wide.addListener(onWide); }
+    }
+  }
+
+  // Highlight the section currently in view.
+  var links = Array.prototype.slice.call(document.querySelectorAll("#section-nav a"));
+  if ("IntersectionObserver" in window && links.length) {
+    var byId = {};
+    links.forEach(function (a) { byId[a.getAttribute("href").slice(1)] = a; });
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          links.forEach(function (a) { a.classList.remove("active"); });
+          var link = byId[entry.target.id];
+          if (link) { link.classList.add("active"); }
+        }
+      });
+    }, { rootMargin: "-30% 0px -60% 0px" });
+    document.querySelectorAll("section.section").forEach(function (s) { observer.observe(s); });
+  }
+})();
+</script>
+</body>
+</html>
